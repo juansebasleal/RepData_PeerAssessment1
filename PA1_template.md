@@ -7,10 +7,25 @@ output:
 By Sebastian Leal
 
 ## Loading and preprocessing the data
-```{r loaddata}
+
+```r
 # Load libraries
 library(reshape2)
 library(data.table)
+```
+
+```
+## 
+## Attaching package: 'data.table'
+```
+
+```
+## The following objects are masked from 'package:reshape2':
+## 
+##     dcast, melt
+```
+
+```r
 # Unzip and read file, with the proper data type for each column
 activities <- read.csv(
   unz('activity.zip', 'activity.csv'),
@@ -20,9 +35,21 @@ activities <- read.csv(
 summary(activities)
 ```
 
+```
+##      steps             date               interval     
+##  Min.   :  0.00   Min.   :2012-10-01   Min.   :   0.0  
+##  1st Qu.:  0.00   1st Qu.:2012-10-16   1st Qu.: 588.8  
+##  Median :  0.00   Median :2012-10-31   Median :1177.5  
+##  Mean   : 37.38   Mean   :2012-10-31   Mean   :1177.5  
+##  3rd Qu.: 12.00   3rd Qu.:2012-11-15   3rd Qu.:1766.2  
+##  Max.   :806.00   Max.   :2012-11-30   Max.   :2355.0  
+##  NA's   :2304
+```
+
 
 ## What is mean total number of steps taken per day?
-```{r totalSteps}
+
+```r
 stepsByDay <- with(activities, tapply(steps, date, sum, na.rm = T))
 stepsByDayMean <- mean(stepsByDay)
 stepsByDayMedian <- median(stepsByDay)
@@ -42,8 +69,11 @@ legend(
 )
 ```
 
+![](PA1_template_files/figure-html/totalSteps-1.png)<!-- -->
+
 ## What is the average daily activity pattern?
-```{r avgInterval}
+
+```r
 stepsByIntervalAvg <- reshape2::melt(tapply(
   activities$steps,
   activities$interval,
@@ -54,18 +84,32 @@ names(stepsByIntervalAvg) <- c("Interval", "StepsAvg")
 plot(stepsByIntervalAvg, type="l")
 ```
 
+![](PA1_template_files/figure-html/avgInterval-1.png)<!-- -->
+
 Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
-```{r}
+
+```r
 IntervalWithMaxSteps <- stepsByIntervalAvg[order(stepsByIntervalAvg$StepsAvg, decreasing = T),]
 IntervalWithMaxSteps[1,]
 ```
 
+```
+##     Interval StepsAvg
+## 104      835 206.1698
+```
+
 ## Imputing missing values
 How many NAs in the dataset
-```{r totalnas}
+
+```r
 sum(is.na(activities))
 ```
-```{r}
+
+```
+## [1] 2304
+```
+
+```r
 activitiesWithoutNAs <- copy(activities)
 # For NA steps, insert the average of the day
 for(i in 1:nrow(activitiesWithoutNAs)) {
@@ -95,12 +139,15 @@ legend(
   bty="n"
 )
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
 Yes, we see that imputing missing values change a bit the initial figures. Now the mean and median are the same.
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-```{r}
+
+```r
 #weekdays(activitiesWithoutNAs$date)
 #weekdays(activitiesWithoutNAs$date) %in% c("sábado", "domingo", "saturday", "sunday")
 
@@ -143,5 +190,6 @@ legend(
   fill=c("red", "blue"),
   bty="n"
 )
-
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
